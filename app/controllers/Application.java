@@ -6,30 +6,20 @@ import play.mvc.*;
 
 import views.html.*;
 import models.*;
+import actions.*;
+
 
 public class Application extends Controller {
 
-    static Form<Task> taskForm = form(Task.class);
-
+    @Verbose(true)
     public static Result index() {
-        //        return ok(index.render("Your new application is ready."));
-        return redirect(routes.Application.tasks());
+        return redirect(routes.Application.list());
     }
-
-    public static Result tasks() {
-        return ok(views.html.index.render(Task.all(), taskForm));
+    public static Result list() {
+        return ok(views.html.index.render(Product.ranking(0,23 )) );
     }
-    public static Result newTask() {
-        Form<Task> filledForm = taskForm.bindFromRequest();
-        if (filledForm.hasErrors()) {
-            return badRequest(views.html.index.render(Task.all(), filledForm));
-        } else {
-            Task.create(filledForm.get());
-            return redirect(routes.Application.tasks());
-        }
-    }
-    public static Result deleteTask(Long id) {
-        Task.delete(id);
-        return redirect(routes.Application.tasks());
+    public static Result ranking(int page) {
+        return ok(views.html.index.render(Product.ranking(page * 24,
+                                                          (page + 1) * 24 - 1 )) );
     }
 }

@@ -5,9 +5,22 @@
 <html>
     <head>
         <title>@title</title>
+        <link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap.min.css">
+
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <!--[if lt IE 7]><link rel="stylesheet" href="http://blueimp.github.com/cdn/css/bootstrap-ie6.min.css"><![endif]-->
+        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/bootstrap-image-gallery.min.css")">
+        
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+
         <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/champagne/jquery.champagne.min.js")" type="text/javascript"></script>
+
+        <script src="http://blueimp.github.com/cdn/js/bootstrap.min.js"></script>
+        <script src="http://blueimp.github.com/JavaScript-Load-Image/load-image.min.js"></script>
+        <script src="@routes.Assets.at("javascripts/bootstrap-image-gallery.min.js")"></script>
+        <script src="@routes.Assets.at("javascripts/main.js")" type="text/javascript"></script>
+
     </head>
     <body>
         @content
