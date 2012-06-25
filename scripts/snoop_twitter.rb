@@ -74,7 +74,7 @@ EM.run do
         begin
           uri = URI.parse(url)
         rescue URI::InvalidURIError
-          return next
+          next
         end
         if (url =~ /t\.co/ and uri.path)
           Net::HTTP.start(uri.host, uri.port){|http|
