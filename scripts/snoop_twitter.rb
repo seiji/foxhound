@@ -68,7 +68,14 @@ EM.run do
         text.scan(URI_RE)
         url= $&
         puts url
-        uri=URI.parse(url)
+        if uri == "http://"
+          next
+        end
+        begin
+          uri = URI.parse(url)
+        rescue URI::InvalidURIError
+          return next
+        end
         if (url =~ /t\.co/ and uri.path)
           Net::HTTP.start(uri.host, uri.port){|http|
             response = http.get(uri.path)
