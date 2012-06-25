@@ -23,11 +23,19 @@ end
 # db.tweet_urls.createIndex({url: 1}, {unique: true})
 
 # db.tweet_urls.ensureIndex({url: 1}, {unique: true});
-class TweetURL
+class Asin
   include Mongoid::Document
-  self.collection_name = 'tweet_urls'
-  field :url, :type => String
+  self.collection_name = 'asin'
+  field :asin,        :type => String
   field :updated_at,  :type => DateTime
+  index :asin, :unique => true
+end
+class Isbn
+  include Mongoid::Document
+  self.collection_name = 'isbn'
+  field :isbn,        :type => String
+  field :updated_at,  :type => DateTime
+  index :isbn, :unique => true
 end
 
 ### Redis
@@ -35,7 +43,9 @@ end
 
 ###  configuure
 REDIS= Redis.new(:hoest =>'localhost', :port => 6379)
-REDIS_URL_COLLECTION_NAME= "url_ranking"
+REDIS_URL_COLLECTION_NAME= "url_ranking" # asin
+REDIS_ISBN_COLLECTION_NAME= "isbn_ranking"
+
 
 Mongoid.configure do |conf|
   conf.master = Mongo::Connection.new('localhost', 27017).db('foxhound')
@@ -68,45 +78,67 @@ EM.run do
         text.scan(URI_RE)
         url= $&
         puts url
-        if uri == "http://"
+        next if url == "http://"
+        while (url =~ /t\.co/ \
+               or url =~ /amzn\.to/ \
+               or url =~ /dlvr\.it/ \
+               or url =~ /tinyurl\.com/)
+          begin
+            uri = URI.parse(url)
+          rescue URI::InvalidURIError
+            next
+          end
+          Net::HTTP.start(uri.host, uri.port){|http|
+            response = http.get(uri.path)
+            url = response['location']
+          }
+          next unless url
+        end
+
+        unless url =~ /amazon/
+          puts "[[What url]] :: #{url}"
           next
         end
+
         begin
           uri = URI.parse(url)
         rescue URI::InvalidURIError
           next
         end
-        if (url =~ /t\.co/ and uri.path)
-          Net::HTTP.start(uri.host, uri.port){|http|
-            response = http.get(uri.path)
-            url = response['location']
-          }
-          unless url
-            next
-          end
-          uri = URI.parse(url)
-        end
         search_uri= "#{uri.scheme}://#{uri.host}#{uri.path}"
-        product_id = nil
-        if search_uri =~ /\/(B0[^\/]+)/
-          product_id = $1
+        asin = nil
+        if search_uri =~ /\/([B0-9][A-Z0-9]{9})/
+          asin = $1
         else
+          puts "Error #{search_uri}"
           next
         end
-        puts product_id
+        next unless asin
+
         created_at = status.created_at
 
         # query
-        REDIS.zincrby REDIS_URL_COLLECTION_NAME, 1, product_id
-
-        tweet = Tweet.new(
-                          :id   => status.id,
-                          :text => text,
-                          :screen_name => status.user.screen_name,
-                          :user_id => status.user.id,
-                          :created_at => created_at
-                          )
-        tweet.save
+        puts "[REGIST] #{asin}"
+        if asin =~ /^B/
+          REDIS.zincrby REDIS_URL_COLLECTION_NAME, 1, asin
+          Asin.new(
+                   :asin => asin,
+                   :updated_at => created_at
+                   ).upsert
+        else
+          REDIS.zincrby REDIS_ISBN_COLLECTION_NAME, 1, asin          
+          Isbn.new(
+                   :isbn => asin,
+                   :updated_at => created_at
+                   ).upsert
+        end
+        Tweet.new(
+                  :id   => status.id,
+                  :text => text,
+                  :screen_name => status.user.screen_name,
+                  :user_id => status.user.id,
+                  :created_at => created_at
+                  ).save
       end
     end
   end
