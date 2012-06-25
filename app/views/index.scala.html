@@ -15,9 +15,11 @@
       <ul class="champagne" id="bottomLoad">
       @for(product <- products) {
          <li>
-           <a rel="gallery" href="http://images-jp.amazon.com/images/P/@{product.id}.jpg" title="Roeland!">
+           <a href="http://www.amazon.co.jp/gp/product/@{product.id}" title="">
              <span class="rank">@{product.rank} rank</span>
              <span class="score">@{product.score} pt</span>
+           </a>
+           <a rel="gallery" href="http://images-jp.amazon.com/images/P/@{product.id}.jpg" title="">
              <img src="http://images-jp.amazon.com/images/P/@{product.id}.09._SL160_.jpg" class="" alt="" title="hogehoge" />
            </a>
          </li>
