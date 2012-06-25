@@ -69,7 +69,7 @@ EM.run do
         url= $&
         puts url
         uri=URI.parse(url)
-        if (url =~ /t\.co/)
+        if (url =~ /t\.co/ and uri.path)
           Net::HTTP.start(uri.host, uri.port){|http|
             response = http.get(uri.path)
             url = response['location']
