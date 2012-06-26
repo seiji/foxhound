@@ -3,9 +3,12 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index()
-GET     /ranking                    controllers.Application.list()
-GET     /ranking/:offset            controllers.Application.ranking(offset: Int)
+GET     /                              controllers.Application.index()
+
+GET     /ranking/                      controllers.Application.rankingIndex()
+
+GET     /ranking/:rankingType/         controllers.Application.ranking(rankingType: String, offset: Int ?= 0)
+GET     /ranking/:rankingType/:offset  controllers.Application.ranking(rankingType: String, offset: Int)
 
 # map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /assets/*file                  controllers.Assets.at(path="/public", file)

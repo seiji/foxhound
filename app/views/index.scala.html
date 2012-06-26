@@ -1,5 +1,6 @@
 @(
-  products: List[Product]
+  rankingType: String,
+  products   : List[Product]
 )
 @()
 @import helper._
@@ -10,8 +11,34 @@
     <header>
       <h1>@products.size() product(s)</h1>
     </header>
-    </div>
-    <div id="gallery" data-toggle="modal-gallery" data-target="#modal-gallery">
+   </div>
+
+   <div class="pagination">
+     <ul>
+       @if(rankingType == "isbn") {
+       <li class="active"><a href="#">ISBN</a></li>
+       <li><a href="/ranking/asin/">ASIN</a></li>
+       } else {
+       <li><a href="/ranking/isbn/">ISBN</a></li>
+       <li class="active"><a href="#">ASIN</a></li>
+       }
+     </ul>
+   </div>
+
+   <!-- <div class="pagination"> -->
+   <!--   <ul> -->
+   <!--     <li><a href="#">Prev</a></li> -->
+   <!--     <li class="active"> -->
+   <!--       <a href="#">1</a> -->
+   <!--     </li> -->
+   <!--     <li><a href="#">2</a></li> -->
+   <!--     <li><a href="#">3</a></li> -->
+   <!--     <li><a href="#">4</a></li> -->
+   <!--     <li><a href="#">Next</a></li> -->
+   <!--   </ul> -->
+   <!-- </div> -->
+
+   <div id="gallery" data-toggle="modal-gallery" data-target="#modal-gallery">
       <ul class="champagne" id="bottomLoad">
       @for(product <- products) {
          <li>
