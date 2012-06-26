@@ -90,3 +90,7 @@ ul.champagne li span.score{
 ul.champagne div.hidden {
     display: none;
 }
+
+.pagination ul {
+    margin: 0 8em;
+}

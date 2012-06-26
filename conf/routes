@@ -7,7 +7,7 @@ GET     /                              controllers.Application.index()
 
 GET     /ranking/                      controllers.Application.rankingIndex()
 
-GET     /ranking/:rankingType/         controllers.Application.ranking(rankingType: String, offset: Int ?= 0)
+GET     /ranking/:rankingType/         controllers.Application.ranking(rankingType: String, offset: Int ?= 1)
 GET     /ranking/:rankingType/:offset  controllers.Application.ranking(rankingType: String, offset: Int)
 
 # map static resources from the /public folder to the /assets URL path

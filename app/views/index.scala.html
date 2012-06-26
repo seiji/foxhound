@@ -1,5 +1,6 @@
 @(
   rankingType: String,
+  page       : Int,
   products   : List[Product]
 )
 @()
@@ -23,23 +24,20 @@
        <li class="active"><a href="#">ASIN</a></li>
        }
      </ul>
+     <ul>
+       @if(page == 1) { <li class="active"><a href=".">1</a></li> } else { <li><a href=".">1</a></li> }
+       @if(page == 2) { <li class="active"><a href="2">2</a></li> } else { <li><a href="2">2</a></li> }
+       @if(page == 3) { <li class="active"><a href="2">3</a></li> } else { <li><a href="3">3</a></li> }
+       @if(page == 4) { <li class="active"><a href="3">4</a></li> } else { <li><a href="4">4</a></li> }
+       @if(page == 5) { <li class="active"><a href="5">5</a></li> } else { <li><a href="5">5</a></li> }
+     </ul>
    </div>
 
    <!-- <div class="pagination"> -->
-   <!--   <ul> -->
-   <!--     <li><a href="#">Prev</a></li> -->
-   <!--     <li class="active"> -->
-   <!--       <a href="#">1</a> -->
-   <!--     </li> -->
-   <!--     <li><a href="#">2</a></li> -->
-   <!--     <li><a href="#">3</a></li> -->
-   <!--     <li><a href="#">4</a></li> -->
-   <!--     <li><a href="#">Next</a></li> -->
-   <!--   </ul> -->
    <!-- </div> -->
 
    <div id="gallery" data-toggle="modal-gallery" data-target="#modal-gallery">
-      <ul class="champagne" id="bottomLoad">
+     <ul class="champagne" id="bottomLoad">
       @for(product <- products) {
          <li>
            <a href="http://www.amazon.co.jp/gp/product/@{product.id}" title="">
