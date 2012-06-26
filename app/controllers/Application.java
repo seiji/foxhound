@@ -16,7 +16,7 @@ public class Application extends Controller {
         return redirect(routes.Application.list());
     }
     public static Result list() {
-        return ok(views.html.index.render(Product.ranking(0,100 -1 )) );
+        return ok(views.html.index.render(Product.ranking(0,100 -1) ) );
     }
     public static Result ranking(int page) {
         return ok(views.html.index.render(Product.ranking(page * 100,

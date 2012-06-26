@@ -3,60 +3,13 @@ require 'pp'
 require 'net/http'
 require 'uri'
 
-require 'pit'
-require 'tweetstream'
-require 'mongoid'
-require 'redis'
-
-### MongoDB
-# db.createCollection("capped", {capped: true, size:1000, max: 5})
-class Tweet                    
-  include Mongoid::Document
-  self.collection_name = 'tweets'
-  field :id,          :type => Float
-  field :text,        :type => String
-  field :screen_name, :type => String
-  field :user_id, :type => Float
-  field :created_at,  :type => DateTime
-end
-
-# db.tweet_urls.createIndex({url: 1}, {unique: true})
-
-# db.tweet_urls.ensureIndex({url: 1}, {unique: true});
-class Asin
-  include Mongoid::Document
-  self.collection_name = 'asin'
-  field :asin,        :type => String
-  field :updated_at,  :type => DateTime
-  index :asin, :unique => true
-end
-class Isbn
-  include Mongoid::Document
-  self.collection_name = 'isbn'
-  field :isbn,        :type => String
-  field :updated_at,  :type => DateTime
-  index :isbn, :unique => true
-end
-
-### Redis
-# collection url_ranking
-
-###  configuure
-REDIS= Redis.new(:hoest =>'localhost', :port => 6379)
-REDIS_URL_COLLECTION_NAME= "url_ranking" # asin
-REDIS_ISBN_COLLECTION_NAME= "isbn_ranking"
-
-
-Mongoid.configure do |conf|
-  conf.master = Mongo::Connection.new('localhost', 27017).db('foxhound')
-end
-twitter_config = Pit.get('twitter.com')
+require './config'
 
 TweetStream.configure do |config|
-  config.username = twitter_config["user"]
-  config.password = twitter_config["pass"]
+  config.username    = TWITTER_CONFIG["user"]
+  config.password    = TWITTER_CONFIG["pass"]
   config.auth_method = :basic
-  config.parser   = :yajl
+  config.parser      = :yajl
 end
 ###
 
@@ -85,13 +38,11 @@ EM.run do
                or url =~ /tinyurl\.com/)
           begin
             uri = URI.parse(url)
-          rescue URI::InvalidURIError
-            next
+            Net::HTTP.start(uri.host, uri.port){|http|
+              response = http.get(uri.path)
+              url = response['location']
+            }
           end
-          Net::HTTP.start(uri.host, uri.port){|http|
-            response = http.get(uri.path)
-            url = response['location']
-          }
           next unless url
         end
 
@@ -120,7 +71,7 @@ EM.run do
         # query
         puts "[REGIST] #{asin}"
         if asin =~ /^B/
-          REDIS.zincrby REDIS_URL_COLLECTION_NAME, 1, asin
+          REDIS.zincrby REDIS_ASIN_COLLECTION_NAME, 1, asin
           Asin.new(
                    :asin => asin,
                    :updated_at => created_at

@@ -18,6 +18,9 @@ header a {
     color: #333;
 }
 
+.pagination {
+    text-align:center;
+}
 ul.champagne {
     border: 1px solid #ddd;
     -webkit-box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
