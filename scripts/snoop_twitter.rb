@@ -42,6 +42,8 @@ EM.run do
               response = http.get(uri.path)
               url = response['location']
             }
+          rescue
+            next
           end
           next unless url
         end
@@ -76,6 +78,7 @@ EM.run do
                    :asin => asin,
                    :updated_at => created_at
                    ).upsert
+          product_id= asin
         else
           REDIS.zincrby REDIS_ISBN_COLLECTION_NAME, 1, asin          
           Isbn.new(
@@ -84,11 +87,12 @@ EM.run do
                    ).upsert
         end
         Tweet.new(
-                  :id   => status.id,
-                  :text => text,
+                  :id          => status.id,
+                  :text        => text,
                   :screen_name => status.user.screen_name,
-                  :user_id => status.user.id,
-                  :created_at => created_at
+                  :user_id     => status.user.id,
+                  :product_id  => asin,
+                  :created_at  => created_at
                   ).save
       end
     end
